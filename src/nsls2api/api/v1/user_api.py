@@ -1,7 +1,7 @@
 import asyncio
 
 import fastapi
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, Header
 
 from nsls2api.api.models.person_model import DataSessionAccess, LDAPUserResponse, Person
 from nsls2api.infrastructure.security import get_settings
@@ -74,9 +74,8 @@ async def get_person_by_department(department_code: str = "PS"):
 
 # TODO: Add back into schema if we decide to use this endpoint.
 @router.get("/person/me",include_in_schema=True)
-async def get_myself(request: Request, upn: str= None):
-    #User principal name
-    upn = upn or request.headers.get("upn")
+async def get_myself(upn: str = Header(...)):
+    #upn: User principal name
     if not upn:
         raise HTTPException(status_code=400, detail = "upn not found")
     settings = get_settings()
